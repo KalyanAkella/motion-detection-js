@@ -17,9 +17,9 @@ function MotionSystem(_video, _canvasSource, _canvasBlended) {
     function blend() {
       var width = canvasSource.width;
       var height = canvasSource.height;
-      var sourceData = contextSource.getImageData(0, 0, width, height);
-      if (!lastImageData) lastImageData = contextSource.getImageData(0, 0, width, height);
-      var blendedData = contextSource.createImageData(width, height);
+      var sourceData = contextSource.getImageData(width - 200, height - 200, 200, 200);
+      if (!lastImageData) lastImageData = contextSource.getImageData(width - 200, height - 200, 200, 200);
+      var blendedData = contextSource.createImageData(200, 200);
       differenceAccuracy(blendedData.data, sourceData.data, lastImageData.data);
       contextBlended.putImageData(blendedData, 0, 0);
       lastImageData = sourceData;
@@ -55,7 +55,7 @@ function MotionSystem(_video, _canvasSource, _canvasBlended) {
     function checkAreas() {
       var width = canvasSource.width;
       var height = canvasSource.height;
-      var blendedDataHolder = contextBlended.getImageData(width - 200, height - 200, 200, 200);
+      var blendedDataHolder = contextBlended.getImageData(0, 0, width, height);
       var blendedData = blendedDataHolder.data;
       var whiteArea = 0, i = 0;
       var limit = blendedData.length * 0.25;
@@ -78,7 +78,7 @@ function MotionSystem(_video, _canvasSource, _canvasBlended) {
     function update() {
       drawVideo();
       blend();
-      checkAreas();
+      //checkAreas();
       setTimeout(update, 1000/60);
     }
 
@@ -95,10 +95,12 @@ function initialise() {
   if (navigator.getUserMedia) {
     navigator.getUserMedia({audio: false, video: true}, function(stream) {
       video.src = stream;
+      video.muted = 'muted';
     }, webcamError);
   } else if (navigator.webkitGetUserMedia) {
       navigator.webkitGetUserMedia({audio: false, video: true}, function(stream) {
         video.src = window.webkitURL.createObjectURL(stream);
+        video.muted = 'muted';
     }, webcamError);
   } else {
     //video.src = 'video.webm'; // fallback.
